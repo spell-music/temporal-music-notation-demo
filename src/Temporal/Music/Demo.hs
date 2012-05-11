@@ -105,7 +105,11 @@ timeDiv :: M.TimeDiv
 timeDiv = M.TicksPerBeat 96
 
 toTrack :: Score MidiNote -> M.Track M.Ticks
-toTrack = addEndMsg . tfmTime . mergeInstr . groupInstr
+toTrack = addEndMsg . maybe [] phi . checkOnEmpty . trackEvents
+    where phi = tfmTime . mergeInstr . groupInstr
+          checkOnEmpty x 
+            | null x    = Nothing
+            | otherwise = Just x
 
 addEndMsg :: M.Track M.Ticks -> M.Track M.Ticks
 addEndMsg = (++ [(0, M.TrackEnd)])
@@ -115,10 +119,9 @@ tfmTime = M.fromAbsTime . M.fromRealTime timeDiv .
      sortBy (compare `on` fst)
 
 
-groupInstr :: Score MidiNote -> ([[MidiEvent]], [MidiEvent])
+groupInstr :: [Event T MidiNote] -> ([[MidiEvent]], [MidiEvent])
 groupInstr = first groupByInstrId . 
-    partition (not . isDrum . eventContent) . 
-    alignEvents . trackEvents
+    partition (not . isDrum . eventContent) . alignEvents 
     where groupByInstrId = groupBy ((==) `on` instrId) . 
                            sortBy  (compare `on` instrId)
           

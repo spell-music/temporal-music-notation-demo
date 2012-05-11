@@ -4,7 +4,6 @@
 module Temporal.Music.Demo.GeneralMidi(
     module Temporal.Music.Demo,
     -- * Instruments
-    -- **  Piano
     acousticGrandPiano,
     brightAcousticPiano,
     electricGrandPiano,
@@ -13,7 +12,6 @@ module Temporal.Music.Demo.GeneralMidi(
     chorusedPiano,
     harpsichord,
     clavinet,
-    -- **  Chromatic Percussion
     celesta,
     glockenspiel,
     musicBox,
@@ -22,7 +20,6 @@ module Temporal.Music.Demo.GeneralMidi(
     xylophone,
     tubularBells,
     dulcimer,
-    -- **  Organ
     hammondOrgan,
     percussiveOrgan,
     rockOrgan,
@@ -31,7 +28,6 @@ module Temporal.Music.Demo.GeneralMidi(
     accordion,
     harmonica,
     tangoAccordion,
-    -- **  Guitar
     acousticGuitarNylon,
     acousticGuitarSteel,
     electricGuitarJazz,
@@ -40,7 +36,6 @@ module Temporal.Music.Demo.GeneralMidi(
     overdrivenGuitar,
     distortionGuitar,
     guitarHarmonics,
-    -- **  Bass
     acousticBass,
     electricBassFingered,
     electricBassPicked,
@@ -49,7 +44,6 @@ module Temporal.Music.Demo.GeneralMidi(
     slapBass2,
     synthBass1,
     synthBass2,
-    -- **  Strings
     violin,
     viola,
     cello,
@@ -58,7 +52,6 @@ module Temporal.Music.Demo.GeneralMidi(
     pizzicatoStrings,
     orchestralHarp,
     timpani,
-    -- **  Ensemble
     stringEnsemble1,
     stringEnsemble2,
     synthStrings1,
@@ -67,7 +60,6 @@ module Temporal.Music.Demo.GeneralMidi(
     voiceOohs,
     synthVoice,
     orchestraHit,
-    -- **  Brass
     trumpet,
     trombone,
     tuba,
@@ -76,7 +68,6 @@ module Temporal.Music.Demo.GeneralMidi(
     brassSection,
     synthBrass1,
     synthBrass2,
-    -- **  Reed
     sopranoSax,
     altoSax,
     tenorSax,
@@ -85,7 +76,6 @@ module Temporal.Music.Demo.GeneralMidi(
     bassoon,
     englishHorn,
     clarinet,
-    -- **  Pipe
     piccolo,
     flute,
     recorder,
@@ -94,7 +84,6 @@ module Temporal.Music.Demo.GeneralMidi(
     shakuhachi,
     whistle,
     ocarina,
-    -- **  Synth Lead
     lead1Square,
     lead2Sawtooth,
     lead3Calliope,
@@ -103,7 +92,6 @@ module Temporal.Music.Demo.GeneralMidi(
     lead6Voice,
     lead7Fifths,
     lead8BassLead,
-    -- **  Synth Pad
     pad1NewAge,
     pad2Warm,
     pad3Polysynth,
@@ -112,7 +100,6 @@ module Temporal.Music.Demo.GeneralMidi(
     pad6Metallic,
     pad7Halo,
     pad8Sweep,
-    -- **  Synth Effects
     fx1Train,
     fx2Soundtrack,
     fx3Crystal,
@@ -121,7 +108,6 @@ module Temporal.Music.Demo.GeneralMidi(
     fx6Goblins,
     fx7Echoes,
     fx8SciFi,
-    -- **  Ethnic
     sitar,
     banjo,
     shamisen,
@@ -130,7 +116,6 @@ module Temporal.Music.Demo.GeneralMidi(
     bagpipe,
     fiddle,
     shanai,
-    -- **  Percussive
     tinkleBell,
     agogo,
     steelDrums,
@@ -139,7 +124,6 @@ module Temporal.Music.Demo.GeneralMidi(
     melodicDrum,
     synthDrum,
     reverseCymbal,
-    -- **  Sound Effects
     guitarFretNoise,
     breathNoise,
     seashore,
@@ -148,8 +132,6 @@ module Temporal.Music.Demo.GeneralMidi(
     helicopter,
     applause,
     gunshot,
-    
-
 
     -- * Percussion
     acousticBassDrum,
