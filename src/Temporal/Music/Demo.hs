@@ -121,7 +121,7 @@ tfmTime = M.fromAbsTime . M.fromRealTime timeDiv .
 
 groupInstr :: [Event T MidiNote] -> ([[MidiEvent]], [MidiEvent])
 groupInstr = first groupByInstrId . 
-    partition (not . isDrum . eventContent) . alignEvents 
+    partition (not . isDrum . eventContent) . alignByZero 
     where groupByInstrId = groupBy ((==) `on` instrId) . 
                            sortBy  (compare `on` instrId)
           
@@ -154,14 +154,6 @@ fromEvent ch e = (t1, m1) : zip (repeat t0) m0
 
 clipToMidi :: (Ord a, Num a) => a -> a
 clipToMidi = max 0 . min 127
-
-
-alignEvents :: [MidiEvent] -> [MidiEvent]
-alignEvents es 
-    | d < 0     = map (delay (abs d)) es
-    | otherwise = es
-    where d = minimum $ map eventStart es
-
 
 ---------------------------------------------------
 
