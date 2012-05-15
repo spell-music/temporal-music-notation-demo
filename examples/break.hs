@@ -31,7 +31,7 @@ scoAccomp =  envelopeRel [0, 1, 0.5, 1.5, 0.5, 1, 0] $
 accomp = loop 4 $ glockenspiel scoAccomp 
 
 -- fade out after 0.7*totalDur
-res = {- envelopeSeg [0, 0.7, 0, 0.3, -2] $ -} chord [
+res = envelopeSeg [0, 0.7, 0, 0.3, -5] $ chord [
     drums,
     accomp
     ]

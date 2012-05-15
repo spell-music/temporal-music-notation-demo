@@ -11,21 +11,21 @@ trill n a b = loop n $ line [a, b]
 
 -- alto dynamics
 
-dynamicsRel = envelopeRel
+type Score12 = Score (Note ())
 
-up :: Double -> [Score12 ()] -> Score12 ()
-up x = dynamicsRel [x, x + accDiap] . line . map sn 
+up :: Double -> [Score12] -> Score12
+up x = envelopeRel [x, x + accDiap] . line . map sn 
 
-down :: Double -> [Score12 ()] -> Score12 ()
-down x = dynamicsRel [x + accDiap, x] . line . map sn 
+down :: Double -> [Score12] -> Score12
+down x = envelopeRel [x + accDiap, x] . line . map sn 
 
-upDown :: Double -> [Score12 ()] -> Score12 ()
-upDown x = dynamicsRel [x, x + accDiap, x] . line . map sn 
+upDown :: Double -> [Score12] -> Score12
+upDown x = envelopeRel [x, x + accDiap, x] . line . map sn 
 
-downUp :: Double -> [Score12 ()] -> Score12 ()
-downUp x = dynamicsRel [x, x-accDiap, x] . line . map sn 
+downUp :: Double -> [Score12] -> Score12
+downUp x = envelopeRel [x, x-accDiap, x] . line . map sn 
 
-flat :: Double -> [Score12 ()] -> Score12 ()
+flat :: Double -> [Score12] -> Score12
 flat x = accent x . line . map sn
 
 accDiap = 0.5
@@ -41,7 +41,7 @@ solo1 = line [
 -- 1 bar
     qn af, qn bf, den af, sn g, den f, sn g,
 -- 2 bar
-    dynamicsRel [0, 0.4, 0] $ line [line $ map sn [af, bf, af, bf],
+    envelopeRel [0, 0.4, 0] $ line [line $ map sn [af, bf, af, bf],
     dim 1.5 $ hn $ trill 6 (accent 0.2 $ tn $ high c) (tn bf), tn af, tn bf], 
     high $ line [accent 0.2 $ qn $ c, den c, sn df, 
 -- 3 bar
@@ -240,7 +240,7 @@ bassII = line [bass21, bass22, bass23]
 
 bass = lower 3 $ line [bassI, bassII]
 
-sco = delay (-4) $ bpm (lento 0) $ chord [
+sco = delay (-4) $ bpm (lento $ -0.2) $ chord [
         solo, 
         mp' $ higher 2 alto, 
         accent 0.2 $ p' $ higher 2 $ bass,

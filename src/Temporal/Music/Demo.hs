@@ -3,14 +3,14 @@
 -- midi file from 'HCodecs' package.
 module Temporal.Music.Demo(
     module Temporal.Music,
-    module Data.Finite,
-    MidiNote(..),
+    MidiNote,
     -- * Instruments
     instr, drumInstr,
     -- * Rendering
     renderMidi, FilePath, exportMidi) 
 where
 
+import Data.Default
 import Control.Arrow(first, second)
 import Control.Applicative
 
@@ -23,8 +23,6 @@ import Data.Binary
 import Data.Binary.Put
 
 import qualified Codec.Midi as M
-
-import Data.Finite
 
 import Temporal.Music
 
@@ -39,10 +37,13 @@ type T = Double
 type Instr = Int
 
 
-type MidiEvent = Event T MidiNote
+data MidiId = InstrId Int | DrumId Int
+
+type MidiNote  = Note MidiId
+type MidiEvent = Event T LowMidiNote
 
 -- | This type represents midi note.
-data MidiNote = MidiNote {
+data LowMidiNote = LowMidiNote {
         midiNoteInstr     :: Maybe Instr,
         midiNoteVolume    :: MidiVolume,
         midiNotePitch     :: MidiPitch 
@@ -62,8 +63,7 @@ data MidiPitch  = MidiPitch  {
 type VolumeId   = Int
 type PitchId    = Int
 
-
-isDrum :: MidiNote -> Bool
+isDrum :: LowMidiNote -> Bool
 isDrum = isNothing . midiNoteInstr
 
 ----------------------------------------------------
@@ -71,41 +71,50 @@ isDrum = isNothing . midiNoteInstr
 
 -- | Render 'Track' to midi file and save 
 -- results in current directory.
-exportMidi :: (Real t, Time t) => FilePath -> Track t MidiNote -> IO ()
+exportMidi :: FilePath -> Score MidiNote -> IO ()
 exportMidi f = M.exportFile f . renderMidi
 
 -- | Apply midi instrument.
-instr :: (Finite vol, Finite pch) 
-    => Instr -> Track t (Note vol pch a) -> Track t MidiNote
-instr i = fmap $ 
-    \n -> MidiNote (Just i)
-                (midiVolume $ getVolume n) 
-                (midiPitch  $ getPitch  n)
-                
-    
+instr :: Instr -> Score (Note a) -> Score MidiNote
+instr i = fmap $ mapNoteParam (const $ Just $ InstrId i)
+  
 -- | Apply midi drum instrument.
-drumInstr :: (Finite vol)
-    => Instr -> Track t (Drum vol a) -> Track t MidiNote
+drumInstr :: Instr -> Score (Drum a) -> Score MidiNote
 drumInstr i = fmap $ 
-    \n -> MidiNote  Nothing
-                (midiVolume $ getVolume n) 
-                (drumPitch i)                
-    where drumPitch i = MidiPitch i 0
+    \n -> Note 
+            { noteVolume = drumVolume n
+            , notePitch = def
+            , noteParam = Just $ DrumId i
+            }
 
+toLowMidiNote :: MidiNote -> LowMidiNote
+toLowMidiNote n = case fromJust $ noteParam n of
+    InstrId i   -> instrLowNote i n 
+    DrumId i    -> drumInstrLowNote i n
+
+instrLowNote :: Int -> MidiNote -> LowMidiNote
+instrLowNote i n = LowMidiNote (Just i) 
+    (midiVolume $ getVolume n) 
+    (midiPitch  $ getPitch  n)
+         
+drumInstrLowNote :: Int -> MidiNote -> LowMidiNote
+drumInstrLowNote i n = LowMidiNote Nothing
+    (midiVolume $ getVolume n) 
+    (MidiPitch i 0)                
 
 ------------------------------------------
 -- render evenrs
 
 
 -- | Render to 'Midi'.
-renderMidi :: (Real t, Time t) => Track t MidiNote -> M.Midi
+renderMidi :: Score MidiNote -> M.Midi
 renderMidi s = M.Midi M.SingleTrack timeDiv [toTrack s]
 
 timeDiv :: M.TimeDiv
 timeDiv = M.TicksPerBeat 96
 
-toTrack :: (Real t, Time t) => Track t MidiNote -> M.Track M.Ticks
-toTrack = addEndMsg . maybe [] phi . checkOnEmpty . trackEvents
+toTrack :: Score MidiNote -> M.Track M.Ticks
+toTrack = addEndMsg . maybe [] phi . checkOnEmpty . render . fmap toLowMidiNote
     where phi = tfmTime . mergeInstr . groupInstr
           checkOnEmpty x 
             | null x    = Nothing
@@ -119,17 +128,12 @@ tfmTime = M.fromAbsTime . M.fromRealTime timeDiv .
      sortBy (compare `on` fst)
 
 
-groupInstr :: [Event T MidiNote] -> ([[MidiEvent]], [MidiEvent])
+groupInstr :: [Event T LowMidiNote] -> ([[MidiEvent]], [MidiEvent])
 groupInstr = first groupByInstrId . 
     partition (not . isDrum . eventContent) . alignByZero 
     where groupByInstrId = groupBy ((==) `on` instrId) . 
                            sortBy  (compare `on` instrId)
           
-trackEvents :: (Real t, Time t) => Track t a -> [Event T a]
-trackEvents = fmap phi . render
-    where phi :: Real t => Event t a -> Event Double a
-          phi e = e{ eventStart = realToFrac $ eventStart e
-                   , eventDur   = realToFrac $ eventDur e }
 
 mergeInstr :: ([[MidiEvent]], [MidiEvent]) -> M.Track Double
 mergeInstr (instrs, drums) = concat $ drums' : instrs'
@@ -160,7 +164,7 @@ clipToMidi = max 0 . min 127
 
 ---------------------------------------------------
 
-toMessages :: M.Channel -> MidiNote 
+toMessages :: M.Channel -> LowMidiNote 
      -> ([M.Message], M.Message)
 toMessages ch e = toMessages' ch (midiNoteVolume e) (midiNotePitch e)
 
@@ -176,16 +180,15 @@ toMessages' ch mv mp = (addTune [M.NoteOn ch p v], M.NoteOff ch p 64)
 
 -- set diapason to midi diapason (0, 127), initial
 -- diapason is forgotten
-midiVolume :: Finite a => Volume a -> MidiVolume
+midiVolume :: Volume -> MidiVolume
 midiVolume v = MidiVolume $ floor $ 127 * volumeAsDouble v
 
-
-midiPitch :: Finite s => Pitch s -> MidiPitch
+midiPitch :: Pitch -> MidiPitch
 midiPitch p = uncurry MidiPitch $ properFraction $  
       69 + 12 * (scaleStepFactor s n 
     + scaleOctaveFactor s k + scaleBendFactor s n r)
     where (d, r) = properFraction $ pitchAsDouble p
-          (k, n) = divMod d $  scaleSize s
+          (k, n) = divMod d $  scaleLength s
           s      = pitchScale p
 
 log2 :: (Floating a) => a -> a
