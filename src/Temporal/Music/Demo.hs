@@ -2,8 +2,8 @@
 -- made with 'temporal-music-notation' library to 
 -- midi file from 'HCodecs' package.
 module Temporal.Music.Demo(
-    module  Temporal.Music,
-    module  Data.Finite,
+    module Temporal.Music,
+    module Data.Finite,
     MidiNote(..),
     -- * Instruments
     instr, drumInstr,
@@ -69,14 +69,14 @@ isDrum = isNothing . midiNoteInstr
 ----------------------------------------------------
 --
 
--- | Render Score to midi file and save 
+-- | Render 'Track' to midi file and save 
 -- results in current directory.
-exportMidi :: FilePath -> Score MidiNote -> IO ()
+exportMidi :: (Real t, Time t) => FilePath -> Track t MidiNote -> IO ()
 exportMidi f = M.exportFile f . renderMidi
 
 -- | Apply midi instrument.
 instr :: (Finite vol, Finite pch) 
-    => Instr -> Score (Note vol pch a) -> Score MidiNote
+    => Instr -> Track t (Note vol pch a) -> Track t MidiNote
 instr i = fmap $ 
     \n -> MidiNote (Just i)
                 (midiVolume $ getVolume n) 
@@ -84,8 +84,8 @@ instr i = fmap $
                 
     
 -- | Apply midi drum instrument.
-drumInstr :: Finite vol
-    => Instr -> Score (Drum vol a) -> Score MidiNote
+drumInstr :: (Finite vol)
+    => Instr -> Track t (Drum vol a) -> Track t MidiNote
 drumInstr i = fmap $ 
     \n -> MidiNote  Nothing
                 (midiVolume $ getVolume n) 
@@ -98,13 +98,13 @@ drumInstr i = fmap $
 
 
 -- | Render to 'Midi'.
-renderMidi :: Score MidiNote -> M.Midi
+renderMidi :: (Real t, Time t) => Track t MidiNote -> M.Midi
 renderMidi s = M.Midi M.SingleTrack timeDiv [toTrack s]
 
 timeDiv :: M.TimeDiv
 timeDiv = M.TicksPerBeat 96
 
-toTrack :: Score MidiNote -> M.Track M.Ticks
+toTrack :: (Real t, Time t) => Track t MidiNote -> M.Track M.Ticks
 toTrack = addEndMsg . maybe [] phi . checkOnEmpty . trackEvents
     where phi = tfmTime . mergeInstr . groupInstr
           checkOnEmpty x 
@@ -125,8 +125,11 @@ groupInstr = first groupByInstrId .
     where groupByInstrId = groupBy ((==) `on` instrId) . 
                            sortBy  (compare `on` instrId)
           
-
-trackEvents = render
+trackEvents :: (Real t, Time t) => Track t a -> [Event T a]
+trackEvents = fmap phi . render
+    where phi :: Real t => Event t a -> Event Double a
+          phi e = e{ eventStart = realToFrac $ eventStart e
+                   , eventDur   = realToFrac $ eventDur e }
 
 mergeInstr :: ([[MidiEvent]], [MidiEvent]) -> M.Track Double
 mergeInstr (instrs, drums) = concat $ drums' : instrs'

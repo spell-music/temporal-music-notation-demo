@@ -218,7 +218,7 @@ acousticGrandPiano, brightAcousticPiano, electricGrandPiano,
                     tinkleBell, agogo, steelDrums, woodblock, taikoDrum, melodicDrum,
                     synthDrum, reverseCymbal, guitarFretNoise, breathNoise, seashore,
                     birdTweet, telephoneRing, helicopter, applause, gunshot ::
-                      (Finite vol, Finite pch) => Score (Note vol pch a) -> Score MidiNote
+                      (Finite vol, Finite pch) => Track t (Note vol pch a) -> Track t MidiNote
 
 
 acousticGrandPiano = instr 0
@@ -365,7 +365,7 @@ acousticBassDrum, bassDrum1, sideStick, acousticSnare, handClap,
                   highAgogo, lowAgogo, cabasa, maracas, shortWhistle, longWhistle,
                   shortGuiro, longGuiro, claves, hiWoodBlock, lowWoodBlock,
                   muteCuica, openCuica, muteTriangle, openTriangle ::
-                     (Finite vol) => Score (Drum vol a) -> Score MidiNote
+                     (Finite vol) => Track t (Drum vol a) -> Track t MidiNote
 
 
 acousticBassDrum = drumInstr 35
