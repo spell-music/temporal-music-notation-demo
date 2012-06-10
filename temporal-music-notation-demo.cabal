@@ -1,5 +1,5 @@
 Name:          temporal-music-notation-demo
-Version:       0.2
+Version:       0.2.1
 Cabal-Version: >= 1.2
 License:       BSD3
 License-file:  LICENSE
@@ -19,17 +19,17 @@ Stability:     Experimental
 Tested-With:   GHC==6.12.3
 Build-Type:    Simple
 
--- Extra-Source-Files : 
---              gen/genGM.hs
---              examples/choral.hs
---              examples/break.hs
---              examples/readme.hs
+Extra-Source-Files : 
+               gen/genGM.hs
+               examples/choral.hs
+               examples/break.hs
+               examples/readme.hs
 
 Library
   Build-Depends:
         base >= 4, base < 5,
-        data-default >= 0,
-        temporal-music-notation >= 0.1.6,
+        data-default >= 0.3,
+        temporal-music-notation >= 0.2,
         HCodecs >= 0.2, binary >= 0.5.0.2
   Hs-Source-Dirs:      src/
   Exposed-Modules:
