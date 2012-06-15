@@ -5,7 +5,7 @@ module Temporal.Music.Demo(
     module Temporal.Music,
     MidiNote,
     -- * Instruments
-    instr, drumInstr,
+    Instr, instr, drumInstr,
     -- * Rendering
     renderMidi, FilePath, exportMidi) 
 where
