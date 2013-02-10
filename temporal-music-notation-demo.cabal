@@ -1,5 +1,5 @@
 Name:          temporal-music-notation-demo
-Version:       0.2.1
+Version:       0.2.2
 Cabal-Version: >= 1.6
 License:       BSD3
 License-file:  LICENSE
@@ -25,19 +25,19 @@ Extra-Source-Files :
                examples/break.hs
                examples/readme.hs
 
+Homepage:        https://github.com/anton-k/temporal-music-notation-demo
+Bug-Reports:     https://github.com/anton-k/temporal-music-notation-demo/issues
 
-               
 Source-repository head
-  Type:     git
-  Location: https://github.com/anton-k/temporal-music-notation-demo
-
+    Type: git
+    Location: https://github.com/anton-k/temporal-music-notation-demo
 
 Library
   Build-Depends:
         base >= 4, base < 5,
         data-default >= 0.3,
-        temporal-music-notation >= 0.2,
-        HCodecs >= 0.2, binary >= 0.5.0.2
+        temporal-music-notation >= 0.2.2,
+        HCodecs >= 0.2, binary >= 0.6
   Hs-Source-Dirs:      src/
   Exposed-Modules:
         Temporal.Music.Demo
