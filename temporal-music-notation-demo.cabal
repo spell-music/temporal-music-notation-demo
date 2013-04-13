@@ -1,5 +1,5 @@
 Name:          temporal-music-notation-demo
-Version:       0.2.2
+Version:       0.2.3
 Cabal-Version: >= 1.6
 License:       BSD3
 License-file:  LICENSE
@@ -36,7 +36,7 @@ Library
   Build-Depends:
         base >= 4, base < 5,
         data-default >= 0.3,
-        temporal-music-notation >= 0.2.2,
+        temporal-music-notation >= 0.2.3,
         HCodecs >= 0.2, binary >= 0.6
   Hs-Source-Dirs:      src/
   Exposed-Modules:
