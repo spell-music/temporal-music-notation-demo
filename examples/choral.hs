@@ -7,26 +7,26 @@ import Temporal.Music.Demo.GeneralMidi
 
 
 pedal = sustainT
-trill n a b = loop n $ line [a, b]
+trill n a b = loop n $ mel [a, b]
 
 -- alto dynamics
 
 type Score12 = Score (Note ())
 
 up :: Double -> [Score12] -> Score12
-up x = envelopeRel [x, x + accDiap] . line . map sn 
+up x = withAccentRel [x, x + accDiap] . mel . map sn 
 
 down :: Double -> [Score12] -> Score12
-down x = envelopeRel [x + accDiap, x] . line . map sn 
+down x = withAccentRel [x + accDiap, x] . mel . map sn 
 
 upDown :: Double -> [Score12] -> Score12
-upDown x = envelopeRel [x, x + accDiap, x] . line . map sn 
+upDown x = withAccentRel [x, x + accDiap, x] . mel . map sn 
 
 downUp :: Double -> [Score12] -> Score12
-downUp x = envelopeRel [x, x-accDiap, x] . line . map sn 
+downUp x = withAccentRel [x, x-accDiap, x] . mel . map sn 
 
 flat :: Double -> [Score12] -> Score12
-flat x = accent x . line . map sn
+flat x = accent x . mel . map sn
 
 accDiap = 0.5
 
@@ -37,52 +37,52 @@ accDiap = 0.5
 
 solo0 = qn $ high c
 
-solo1 = line [
+solo1 = mel [
 -- 1 bar
     qn af, qn bf, den af, sn g, den f, sn g,
 -- 2 bar
-    envelopeRel [0, 0.4, 0] $ line [line $ map sn [af, bf, af, bf],
+    withAccentRel [0, 0.4, 0] $ mel [mel $ map sn [af, bf, af, bf],
     dim 1.5 $ hn $ trill 6 (accent 0.2 $ tn $ high c) (tn bf), tn af, tn bf], 
-    high $ line [accent 0.2 $ qn $ c, den c, sn df, 
+    high $ mel [accent 0.2 $ qn $ c, den c, sn df, 
 -- 3 bar
-    qn ef, tn df, stretch (1/4 - 3/32) $ wn c, 
+    qn ef, tn df, str (1/4 - 3/32) $ wn c, 
     sn $ low bf, qn $ low af, en $ low bf, en c] 
     ]
 
-solo11 = high $ line [
-    stretch (1/4 + 1/16) $ wn df, 
-    line $ map tn [ef, f, ef, df], sn c, qn c, qn c]
+solo11 = high $ mel [
+    str (1/4 + 1/16) $ wn df, 
+    mel $ map tn [ef, f, ef, df], sn c, qn c, qn c]
 
 
-solo12 = high $ line [
+solo12 = high $ mel [
     qn df, sn df,
-    line $ map tn [ef, f, ef, df],sn c,  qn c, qn ef]
+    mel $ map tn [ef, f, ef, df],sn c,  qn c, qn ef]
 
     
-soloI = line [solo0, reprise solo1 solo11 solo12]
+soloI = mel [solo0, reprise solo1 solo11 solo12]
 
 
 -- Part II
 
-solo21 = high $ line [
+solo21 = high $ mel [
 -- 1 bar
         qn f, en ef, tn df, tn c, sn df,
-    low $ line $ map en [high c, bf, af, bf],
+    low $ mel $ map en [high c, bf, af, bf],
 -- 2 bar
         qn c, qn c, qn $ low bf, qn $ low af,
 -- 3 bar
-        low $ line [hn g, hn f, 
+        low $ mel [hn g, hn f, 
 -- 4 bar    
         qn af, qn g, hn f]
     ]
 
-solo22 = line [
+solo22 = mel [
 -- 5 bar
         dhn ef, qn ef,
 -- 6 bar
         qn af, qn af, qn bf, qn bf,
 -- 7 bar   
-    high $ line [dhn c, qn df],
+    high $ mel [dhn c, qn df],
 -- 8 bar
     high $ qn c, qn bf, qn af, den f, sn g,
 -- 9 bar
@@ -100,7 +100,7 @@ solo = pedal (1/64) $ soloI +:+ soloII
 
 alto0 = high $ up 0 [low af, c, f, e] 
 
-alto1 = line [
+alto1 = mel [
 -- 1 bar
         high $ down 0.5 [f, c, low af, low f], 
         upDown 0 [g, bf, high df, high c],
@@ -117,22 +117,22 @@ alto1 = line [
         high $ up 0 [af, ef, f, gf, f, df, f, af, g, df, c, gf]
      ] 
 
-alto11 = high $ line [
+alto11 = high $ mel [
         upDown 0 [f, low bf, df, f, bf, af, g, af, g, c, e, low bf],
         upDown 0 [low f, c, f, e]
     ]
 
-alto12 = high $ line [
+alto12 = high $ mel [
         upDown 0 [f, low bf, df, f, bf, af, g, af],
         down 0 [g, low bf, low af, f, low g, df, low af, c]
     ]
 
     
-altoI = line [alto0, reprise alto1 alto11 alto12]
+altoI = mel [alto0, reprise alto1 alto11 alto12]
 
 -- Part II
 
-alto21 = high $ line [
+alto21 = high $ mel [
 -- 1 bar
         upDown 0 [
             low af, c, low bf, df, low bf, df, af, g, 
@@ -153,7 +153,7 @@ alto21 = high $ line [
         ]
     ]
 
-alto22 = high $ line [
+alto22 = high $ mel [
 -- 5 bar
         down (-accDiap) $ [
             low g, c, ef, df, low g, low bf, df, c] ++
@@ -180,9 +180,9 @@ alto22 = high $ line [
 
 alto23 = en $ high f
 
-altoII = line [alto21, alto22, alto23]
+altoII = mel [alto21, alto22, alto23]
 
-alto = pedal (1/128) $ lower 3 $ line [altoI, altoII]
+alto = pedal (1/128) $ lower 3 $ mel [altoI, altoII]
 
 
 ----------------------------------------------------------
@@ -190,26 +190,26 @@ alto = pedal (1/128) $ lower 3 $ line [altoI, altoII]
 
 -- Part I
 
-bass0 = lower 1 $ line [en f, en f]
+bass0 = lower 1 $ mel [en f, en f]
 
-bass1 = (line $ map en [
+bass1 = (mel $ map en [
 -- 1 bar
         f, f, f, e, f, f, f, ef,
 -- 2 bar
         df, df, df, df, c, c, f, f]) +:+
 -- 3 bar
-    (high $ line $ map en [c, c, c, c, c, c, low bf, low a])
+    (high $ mel $ map en [c, c, c, c, c, c, low bf, low a])
 
-bass11 = line $ map en [bf, af, g, f, e, c, low f, low f]
+bass11 = mel $ map en [bf, af, g, f, e, c, low f, low f]
 
-bass12 = line $ map en [bf, af, g, f, e, f, c, c]
+bass12 = mel $ map en [bf, af, g, f, e, f, c, c]
 
-bassI = line [bass0, reprise bass1 bass11 bass12]
+bassI = mel [bass0, reprise bass1 bass11 bass12]
 
 
 -- Part II
 
-bass21 = line $ map en [
+bass21 = mel $ map en [
 -- 1 bar
         df, df, ef, ef, af, ef, f, df,
 -- 2 bar
@@ -220,7 +220,7 @@ bass21 = line $ map en [
         d, d, d, d, low a, low a, low b, low b
     ] 
     
-bass22 = low $ line $ map en [
+bass22 = low $ mel $ map en [
 -- 5 bar
         high c, high c, bf, bf, af, af, g, g,
 -- 6 bar
@@ -236,11 +236,11 @@ bass22 = low $ line $ map en [
 bass23 = qn $ low f
 
     
-bassII = line [bass21, bass22, bass23]
+bassII = mel [bass21, bass22, bass23]
 
-bass = lower 3 $ line [bassI, bassII]
+bass = lower 3 $ mel [bassI, bassII]
 
-sco = delay (-4) $ bpm (lento $ -0.2) $ chord [
+sco = del (-4) $ bpm (lento $ -0.2) $ har [
         solo, 
         mp' $ higher 2 alto, 
         accent 0.2 $ p' $ higher 2 $ bass,

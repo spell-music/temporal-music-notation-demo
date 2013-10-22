@@ -1,6 +1,6 @@
 -- | Library provides functions to render 'Score' 
--- made with 'temporal-music-notation' library to 
--- midi file from 'HCodecs' package.
+-- made with the library 'temporal-music-notation' to 
+-- midi file with the package 'HCodecs'.
 module Temporal.Music.Demo(
     module Temporal.Music,
     MidiNote,
